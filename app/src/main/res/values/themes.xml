@@ -8,9 +8,10 @@
     <style name="Theme.OneNote2025" parent="Base.Theme.OneNote2025" />
 
     <style name="Title">
-        <item name="android:textSize">32sp</item>
+        <item name="android:textSize">36sp</item>
         <item name="android:textColor">@color/blue</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/playfair_display</item>
     </style>
 
     <style name="Icon">
@@ -22,7 +23,7 @@
         <item name="android:layout_margin">20dp</item>
         <item name="android:text">@string/login</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="ListItem">

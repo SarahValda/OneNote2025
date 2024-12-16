@@ -13,4 +13,9 @@
     <string name="no">Nein</string>
     <string name="note_deleted">Notiz gelöscht</string>
     <string name="delete_message">Möchtest du diese Notiz wirklich löschen?</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galerie</string>
+    <string name="preview_image">Vorschaubild</string>
+    <string name="latitude">Breitengrad: </string>
+    <string name="longitude">Längengrad: </string>
 </resources>
