@@ -7,104 +7,120 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+
+/**
+ * Manages the SQLite database for storing notes (title, message, imagePath, latitude, longitude).
+ * Handles creation, upgrades, and CRUD operations on the notes table.
+ */
+
 class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
 
-        // Database properties
         private const val DATABASE_NAME = "onenote"
         private const val DATABASE_TABLE_NAME = "notes"
+        private const val DATABASE_VERSION = 3
 
-        // Version auf 2 erhöht, um die neue Spalte hinzuzufügen
-        private const val DATABASE_VERSION = 2
-
-        // Database table column names
+        // Columns for the notes table
         private const val KEY_ID = "id"
         private const val KEY_TITLE = "title"
         private const val KEY_MESSAGE = "message"
-        private const val KEY_IMAGEPATH = "imagePath"  // Neue Spalte
+        private const val KEY_IMAGEPATH = "imagePath"
+        private const val KEY_LATITUDE = "latitude"
+        private const val KEY_LONGITUDE = "longitude"
 
-        // Create table statement (mit imagePath)
+        // SQL to create the table with all fields including imagePath, latitude, longitude
         private const val CREATE_TABLE = """CREATE TABLE $DATABASE_TABLE_NAME(
                 $KEY_ID INTEGER PRIMARY KEY,
                 $KEY_TITLE TEXT,
                 $KEY_MESSAGE TEXT,
-                $KEY_IMAGEPATH TEXT
+                $KEY_IMAGEPATH TEXT,
+                $KEY_LATITUDE REAL,
+                $KEY_LONGITUDE REAL
         )"""
 
-        // Database cursor array (imagePath hinzugefügt)
+        // Cursor array for columns
         private val CURSOR_ARRAY = arrayOf(
             KEY_ID,
             KEY_TITLE,
             KEY_MESSAGE,
-            KEY_IMAGEPATH
+            KEY_IMAGEPATH,
+            KEY_LATITUDE,
+            KEY_LONGITUDE
         )
 
-        // Select all statement
         private const val SELECT_ALL = "SELECT * FROM $DATABASE_TABLE_NAME"
     }
 
-    // Insert note into database
+    // Creates the initial table structure.
+    override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL(CREATE_TABLE)
+    }
+
+    /**
+     * Handles database upgrades, adding new columns if necessary.
+     * oldVersion < 2: Add imagePath column.
+     * oldVersion < 3: Add latitude and longitude columns.
+     */
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $DATABASE_TABLE_NAME ADD COLUMN $KEY_IMAGEPATH TEXT")
+        }
+        if (oldVersion < 3) { // NEU: Latitude und Longitude Spalten
+            db.execSQL("ALTER TABLE $DATABASE_TABLE_NAME ADD COLUMN $KEY_LATITUDE REAL")
+            db.execSQL("ALTER TABLE $DATABASE_TABLE_NAME ADD COLUMN $KEY_LONGITUDE REAL")
+        }
+    }
+
+    /**
+     * Inserts a new note into the database.
+     * @return The row ID of the newly inserted note.
+     */
+
     fun insertNote(note: Note): Long {
-        val values = noteToContentValues(note)
-        return writableDatabase.insert(DATABASE_TABLE_NAME, null, values)
+        return writableDatabase.insert(DATABASE_TABLE_NAME, null, noteToContentValues(note))
     }
 
-    // Create new ContentValues object note
-    private fun noteToContentValues(note: Note): ContentValues {
-        val values = ContentValues()
-        values.put(KEY_TITLE, note.title)
-        values.put(KEY_MESSAGE, note.message)
-        values.put(KEY_IMAGEPATH, note.imagePath) // imagePath hinzufügen
-        return values
-    }
+    /**
+     * Retrieves a single note by its ID.
+     * @return The note if found, otherwise null.
+     */
 
-    // Get single note from database
     fun getNote(id: Long): Note? {
         val cursor = readableDatabase.query(
             DATABASE_TABLE_NAME, CURSOR_ARRAY, "$KEY_ID=?",
             arrayOf(id.toString()), null, null, null, null
         )
 
-        val note = if (cursor.moveToFirst()) {
-            cursorToNote(cursor)
-        } else {
-            null
-        }
+        val note = if (cursor.moveToFirst()) cursorToNote(cursor) else null
         cursor.close()
-
         return note
     }
 
-    // Get all notes from database
+    /**
+     * Retrieves all notes in the database.
+     * @return A list of all notes.
+     */
+
     fun getAllNotes(): List<Note> {
         val notes = ArrayList<Note>()
         val cursor = readableDatabase.rawQuery(SELECT_ALL, null)
 
         if (cursor.moveToFirst()) {
             do {
-                cursorToNote(cursor)?.let {
-                    notes.add(it)
-                }
+                cursorToNote(cursor)?.let { notes.add(it) }
             } while (cursor.moveToNext())
         }
         cursor.close()
-
         return notes
     }
 
-    @SuppressLint("Range")
-    private fun cursorToNote(cursor: Cursor): Note? {
-        if (cursor.count == 0) return null
-        return Note(
-            title = cursor.getString(cursor.getColumnIndex(KEY_TITLE)),
-            message = cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)),
-            id = cursor.getLong(cursor.getColumnIndex(KEY_ID)),
-            imagePath = cursor.getString(cursor.getColumnIndex(KEY_IMAGEPATH)) // imagePath auslesen
-        )
-    }
+    /**
+     * Updates an existing note.
+     * @return The number of rows affected.
+     */
 
-    // Update single note
     fun updateNote(note: Note): Int {
         return writableDatabase.update(
             DATABASE_TABLE_NAME,
@@ -114,7 +130,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         )
     }
 
-    // Delete single note
+    // Deletes a note by its ID.
     fun deleteNote(id: Long) {
         writableDatabase.delete(
             DATABASE_TABLE_NAME,
@@ -123,14 +139,29 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         )
     }
 
-    override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL(CREATE_TABLE)
+    // Converts a Note object into ContentValues for database insert/update.
+    private fun noteToContentValues(note: Note): ContentValues {
+        val values = ContentValues()
+        values.put(KEY_TITLE, note.title)
+        values.put(KEY_MESSAGE, note.message)
+        values.put(KEY_IMAGEPATH, note.imagePath)
+        note.latitude?.let { values.put(KEY_LATITUDE, it) }
+        note.longitude?.let { values.put(KEY_LONGITUDE, it) }
+        return values
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Wenn die Datenbank von Version 1 auf 2 angehoben wird, fügen wir die imagePath-Spalte hinzu
-        if (oldVersion < 2) {
-            db.execSQL("ALTER TABLE $DATABASE_TABLE_NAME ADD COLUMN $KEY_IMAGEPATH TEXT")
-        }
+    // Converts a cursor row into a Note object.
+    @SuppressLint("Range")
+    private fun cursorToNote(cursor: Cursor): Note? {
+        if (cursor.count == 0) return null
+
+        val title = cursor.getString(cursor.getColumnIndex(KEY_TITLE))
+        val message = cursor.getString(cursor.getColumnIndex(KEY_MESSAGE))
+        val id = cursor.getLong(cursor.getColumnIndex(KEY_ID))
+        val imagePath = cursor.getString(cursor.getColumnIndex(KEY_IMAGEPATH))
+        val latitude = if (!cursor.isNull(cursor.getColumnIndex(KEY_LATITUDE))) cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)) else null
+        val longitude = if (!cursor.isNull(cursor.getColumnIndex(KEY_LONGITUDE))) cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)) else null
+
+        return Note(title, message, id, imagePath, latitude, longitude)
     }
 }

@@ -7,47 +7,40 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 
-class NoteAdapter(context: Context, var notes: List<Note>): BaseAdapter() {
-
+/**
+ * A custom adapter for displaying a list of notes (title & message). Uses a ViewHolder pattern for efficient list rendering.
+ */
+class NoteAdapter(context: Context, var notes: List<Note>) : BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    override fun getCount(): Int {
-        return notes.size
-    }
+    /** Returns the total number of notes. */
+    override fun getCount(): Int = notes.size
 
-    override fun getItem(position: Int): Any {
-        return notes[position]
-    }
+    /** Returns the note at the given position. */
+    override fun getItem(position: Int): Any = notes[position]
 
-    override fun getItemId(position: Int): Long {
-        return notes[position].id
-    }
+    /** Returns the unique ID of the note at the given position. */
+    override fun getItemId(position: Int): Long = notes[position].id
 
+    /**
+     * Inflates or reuses a view for a note item, sets title and message.
+     * Uses ViewHolder to avoid repeated findViewById calls.
+     */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View
-        val holder: ViewHolder
-
+        val view: View; val holder: ViewHolder
         if (convertView == null) {
             view = inflater.inflate(R.layout.list_item_view, parent, false)
-
-            holder = ViewHolder()
-            holder.title = view.findViewById(R.id.title)
-            holder.message = view.findViewById(R.id.message)
-
+            holder = ViewHolder(view.findViewById(R.id.title), view.findViewById(R.id.message))
             view.tag = holder
         } else {
             view = convertView
             holder = convertView.tag as ViewHolder
         }
-
         holder.title.text = notes[position].title
         holder.message.text = notes[position].message
-
         return view
     }
 
-    private class ViewHolder {
-        lateinit var title: TextView
-        lateinit var message: TextView
-    }
+    /** Holds references to UI elements for each note item. */
+    private class ViewHolder(var title: TextView, var message: TextView)
 }
