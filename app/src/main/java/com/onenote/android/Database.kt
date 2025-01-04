@@ -9,8 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper
 
 
 /**
- * Manages the SQLite database for storing notes (title, message, imagePath, latitude, longitude).
- * Handles creation, upgrades, and CRUD operations on the notes table.
+ * Handles SQLite database operations for managing notes.
+ * Supports creation, updates, deletion, and querying of notes with attributes like title, message, image path, and location.
  */
 
 class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -137,6 +137,22 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             "$KEY_ID=?",
             arrayOf(id.toString())
         )
+    }
+
+    // Searches for notes in the database that match the given query.
+    fun searchNotes(query: String): List<Note> {
+        val filteredNotes = ArrayList<Note>()
+        val cursor = readableDatabase.query(
+            "notes", null, "title LIKE ? OR message LIKE ?",
+            arrayOf("%$query%", "%$query%"), null, null, null
+        )
+        if (cursor.moveToFirst()) {
+            do {
+                cursorToNote(cursor)?.let { filteredNotes.add(it) }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return filteredNotes
     }
 
     // Converts a Note object into ContentValues for database insert/update.

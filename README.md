@@ -1,4 +1,4 @@
-# OneNote Android App 📓✨
+# OneNote2025 📓✨
 
 ## Overview
 
@@ -11,26 +11,33 @@ The OneNote Android App is a simple and intuitive way to manage your notes. Add 
 - **View Notes**: See all notes in a list or select one to view details.
 - **Delete Notes**: Remove notes you no longer need.
 - **Add Images**: Capture a photo or choose one from your gallery.
-- **Location Tracking**: Automatically save the note's location and display it on a map.
+- **Location Tracking**: Save the note's location and display it on a map.
+- **Search Notes**: Find notes by title or message using the integrated search bar.
+- **Haptic Feedback**: Enjoy sound and vibration feedback when saving a note for an engaging user experience.
 
 ## Usage 📝
 
 ### Creating Notes
 
-1. **Tap "New Note"**: Add a title and message.
-2. **Attach Images**: Use the camera or gallery options.
-3. **Save the Note**: The app saves your location automatically.
+- **Tap "New Note"**: Add a title and message.
+- **Attach Images**: Use the camera or gallery options.
+- **Save the Note**: The app saves your location and provides sound/vibration feedback.
 
 ### Editing Notes
 
-1. **Select a Note**: Open it from the list.
-2. **Modify Content**: Update the title, message, or image.
-3. **Save Changes**: Keep your updates.
+- **Select a Note**: Open it from the list.
+- **Modify Content**: Update the title, message, or image.
+- **Save Changes**: Keep your updates.
 
 ### Viewing Notes
 
 - **List View**: See all notes in one place.
 - **Details View**: Open a note to see its title, message, image, and location on a map.
+
+### Searching Notes
+
+- **Use the Search Bar**: Tap the search icon in the toolbar and type your query.
+- **Filter Notes**: Instantly view results matching the title or message.
 
 ### Deleting Notes
 
@@ -58,15 +65,17 @@ The OneNote Android App is a simple and intuitive way to manage your notes. Add 
 ## Permissions 🔒
 
 The app requests the following permissions:
-- **Camera**: To capture photos for notes.
-- **Read External Storage**: To select images from your gallery.
-- **Access Fine Location**: To track and display your location.
+- **Camera**: To capture photos for notes. Required to access your device's camera functionality.
+- **Read External Storage**: To select images from your gallery. Ensures the app can retrieve existing images from your device.
+- **Access Fine Location**: To track and display your current location on the map. This enhances the note-taking experience by associating notes with specific locations.
+- **Write External Storage** (if applicable): To save captured photos directly to your device's storage (required on older Android versions).
 
 ## Troubleshooting 🛠️
 
-- **Location Not Available**: Check that location services are enabled.
-- **Image Not Displaying**: Ensure the app has storage access.
+- **Location Not Available**: Check that location services are enabled and permissions are granted. Restart the app or the device if the issue persists.
+- **Image Not Displaying**: Ensure the app has storage access and that the image file exists on your device.
+- **No Camera App Available**: Verify that a camera app is installed on your device. This issue often occurs on emulators where a camera app is not pre-installed. Test on a physical device or ensure the emulator has camera capabilities enabled.
 
 ## Conclusion
 
-OneNote Android App makes organizing your notes simple and effective with image attachments and location tracking. Manage your notes effortlessly and enjoy enhanced functionality!  
+OneNote2025 makes organizing your notes simple and effective with image attachments and location tracking. Manage your notes effortlessly and enjoy enhanced functionality!  

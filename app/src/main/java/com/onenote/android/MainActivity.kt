@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
 
         // Set the login button’s onClickListener.
         buttonLogin.setOnClickListener {
-            // Show a toast message confirming sign-in.
             Toast.makeText(this, R.string.signed_in, Toast.LENGTH_LONG).show()
 
             // Navigate to the NoteListActivity to display all notes.

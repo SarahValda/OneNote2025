@@ -18,4 +18,5 @@
     <string name="preview_image">Preview Image</string>
     <string name="latitude">Latitude: </string>
     <string name="longitude">Longitude: </string>
+    <string name="search">Search</string>
 </resources>
